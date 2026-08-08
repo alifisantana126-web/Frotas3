@@ -1,0 +1,6 @@
+{
+  "name": "Gestão de Frotas Corporativas",
+  "description": "Plataforma completa de gestão de frotas corporativas com controle de veículos, condutores, CNH, multas, contratos, odômetro, pedágio e desmobilização.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

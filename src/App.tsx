@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { dbEngine } from './lib/supabase';
+import { dbEngine, isSupabaseConfigured } from './lib/supabase';
 import {
   UserProfile,
   Company,
@@ -108,8 +108,13 @@ export default function App() {
       document.documentElement.classList.remove('dark');
     }
 
-    // Load Data from LocalDbEngine
+    // Load Data from LocalDbEngine & Sync from Supabase if configured
     refreshAllData();
+    if (isSupabaseConfigured) {
+      dbEngine.syncFromSupabase().then(() => {
+        refreshAllData();
+      });
+    }
   }, [theme]);
 
   const refreshAllData = () => {
@@ -406,9 +411,11 @@ export default function App() {
             {/* Right Side Header Controls */}
             <div className="flex items-center gap-4">
               {/* Status Indicator */}
-              <div className="hidden md:flex items-center gap-2 text-[10px] uppercase tracking-widest text-[#888888]">
-                <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                <span>Encrypted Tunnel: Active</span>
+              <div className="hidden md:flex items-center gap-3 text-[10px] uppercase tracking-widest text-[#888888]">
+                <div className="flex items-center gap-1.5" title={isSupabaseConfigured ? 'Supabase configurado e sincronizado' : 'Modo local ativado. Configure VITE_SUPABASE_URL no .env'}>
+                  <div className={`w-1.5 h-1.5 rounded-full ${isSupabaseConfigured ? 'bg-emerald-500 animate-pulse' : 'bg-amber-500'}`} />
+                  <span>Supabase: {isSupabaseConfigured ? 'Conectado' : 'Modo Local'}</span>
+                </div>
               </div>
 
               {/* Alert Badge Indicator */}

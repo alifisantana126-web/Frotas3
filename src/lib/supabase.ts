@@ -488,75 +488,151 @@ class LocalDbEngine {
   public getLogs(): AuditLog[] { return this.getStorage('logs', []); }
   public getAuditLogs(): AuditLog[] { return this.getLogs(); }
 
-  // Setters / Updaters
+  // Setters / Updaters with Supabase Synchronization
   public saveCompanies(data: Company[]) { this.setStorage('companies', data); }
-  public saveCompany(company: Company) {
+  public async saveCompany(company: Company) {
     const list = this.getCompanies();
     const idx = list.findIndex((c) => c.id === company.id);
     if (idx >= 0) list[idx] = company;
     else list.push(company);
     this.saveCompanies(list);
+
+    if (supabase) {
+      try {
+        await supabase.from('companies').upsert(company);
+      } catch (err) {
+        console.error('Error saving company to Supabase:', err);
+      }
+    }
   }
 
   public saveCarriers(data: Carrier[]) { this.setStorage('carriers', data); }
-  public saveCarrier(carrier: Carrier) {
+  public async saveCarrier(carrier: Carrier) {
     const list = this.getCarriers();
     const idx = list.findIndex((c) => c.id === carrier.id);
     if (idx >= 0) list[idx] = carrier;
     else list.push(carrier);
     this.saveCarriers(list);
+
+    if (supabase) {
+      try {
+        await supabase.from('carriers').upsert(carrier);
+      } catch (err) {
+        console.error('Error saving carrier to Supabase:', err);
+      }
+    }
   }
 
   public saveDrivers(data: Driver[]) { this.setStorage('drivers', data); }
-  public saveDriver(driver: Driver) {
+  public async saveDriver(driver: Driver) {
     const list = this.getDrivers();
     const idx = list.findIndex((d) => d.id === driver.id);
     if (idx >= 0) list[idx] = driver;
     else list.push(driver);
     this.saveDrivers(list);
+
+    if (supabase) {
+      try {
+        await supabase.from('drivers').upsert(driver);
+      } catch (err) {
+        console.error('Error saving driver to Supabase:', err);
+      }
+    }
   }
-  public deleteDriver(id: string) {
+  public async deleteDriver(id: string) {
     this.saveDrivers(this.getDrivers().filter((d) => d.id !== id));
+    if (supabase) {
+      try {
+        await supabase.from('drivers').delete().eq('id', id);
+      } catch (err) {
+        console.error('Error deleting driver from Supabase:', err);
+      }
+    }
   }
 
   public saveVehicles(data: Vehicle[]) { this.setStorage('vehicles', data); }
-  public saveVehicle(vehicle: Vehicle) {
+  public async saveVehicle(vehicle: Vehicle) {
     const list = this.getVehicles();
     const idx = list.findIndex((v) => v.id === vehicle.id);
     if (idx >= 0) list[idx] = vehicle;
     else list.push(vehicle);
     this.saveVehicles(list);
+
+    if (supabase) {
+      try {
+        await supabase.from('vehicles').upsert(vehicle);
+      } catch (err) {
+        console.error('Error saving vehicle to Supabase:', err);
+      }
+    }
   }
-  public deleteVehicle(id: string) {
+  public async deleteVehicle(id: string) {
     this.saveVehicles(this.getVehicles().filter((v) => v.id !== id));
+    if (supabase) {
+      try {
+        await supabase.from('vehicles').delete().eq('id', id);
+      } catch (err) {
+        console.error('Error deleting vehicle from Supabase:', err);
+      }
+    }
   }
 
   public saveContracts(data: Contract[]) { this.setStorage('contracts', data); }
-  public saveContract(contract: Contract) {
+  public async saveContract(contract: Contract) {
     const list = this.getContracts();
     const idx = list.findIndex((c) => c.id === contract.id);
     if (idx >= 0) list[idx] = contract;
     else list.push(contract);
     this.saveContracts(list);
+
+    if (supabase) {
+      try {
+        await supabase.from('contracts').upsert(contract);
+      } catch (err) {
+        console.error('Error saving contract to Supabase:', err);
+      }
+    }
   }
-  public deleteContract(id: string) {
+  public async deleteContract(id: string) {
     this.saveContracts(this.getContracts().filter((c) => c.id !== id));
+    if (supabase) {
+      try {
+        await supabase.from('contracts').delete().eq('id', id);
+      } catch (err) {
+        console.error('Error deleting contract from Supabase:', err);
+      }
+    }
   }
 
   public saveFines(data: Fine[]) { this.setStorage('fines', data); }
-  public saveFine(fine: Fine) {
+  public async saveFine(fine: Fine) {
     const list = this.getFines();
     const idx = list.findIndex((f) => f.id === fine.id);
     if (idx >= 0) list[idx] = fine;
     else list.push(fine);
     this.saveFines(list);
+
+    if (supabase) {
+      try {
+        await supabase.from('fines').upsert(fine);
+      } catch (err) {
+        console.error('Error saving fine to Supabase:', err);
+      }
+    }
   }
-  public deleteFine(id: string) {
+  public async deleteFine(id: string) {
     this.saveFines(this.getFines().filter((f) => f.id !== id));
+    if (supabase) {
+      try {
+        await supabase.from('fines').delete().eq('id', id);
+      } catch (err) {
+        console.error('Error deleting fine from Supabase:', err);
+      }
+    }
   }
 
   public saveMileage(data: MileageReading[]) { this.setStorage('mileage', data); }
-  public saveMileageReading(reading: MileageReading) {
+  public async saveMileageReading(reading: MileageReading) {
     const list = this.getMileage();
     list.unshift(reading);
     this.saveMileage(list);
@@ -567,23 +643,53 @@ class LocalDbEngine {
     if (vIdx >= 0 && reading.km_atual > (vehicles[vIdx].odometro_atual || 0)) {
       vehicles[vIdx].odometro_atual = reading.km_atual;
       this.saveVehicles(vehicles);
+      if (supabase) {
+        try {
+          await supabase.from('vehicles').upsert(vehicles[vIdx]);
+        } catch (err) {
+          console.error('Error updating vehicle mileage in Supabase:', err);
+        }
+      }
+    }
+
+    if (supabase) {
+      try {
+        await supabase.from('mileage_readings').upsert(reading);
+      } catch (err) {
+        console.error('Error saving mileage reading to Supabase:', err);
+      }
     }
   }
 
   public saveTags(data: Tag[]) { this.setStorage('tags', data); }
-  public saveTag(tag: Tag) {
+  public async saveTag(tag: Tag) {
     const list = this.getTags();
     const idx = list.findIndex((t) => t.id === tag.id);
     if (idx >= 0) list[idx] = tag;
     else list.push(tag);
     this.saveTags(list);
+
+    if (supabase) {
+      try {
+        await supabase.from('tags').upsert(tag);
+      } catch (err) {
+        console.error('Error saving tag to Supabase:', err);
+      }
+    }
   }
-  public deleteTag(id: string) {
+  public async deleteTag(id: string) {
     this.saveTags(this.getTags().filter((t) => t.id !== id));
+    if (supabase) {
+      try {
+        await supabase.from('tags').delete().eq('id', id);
+      } catch (err) {
+        console.error('Error deleting tag from Supabase:', err);
+      }
+    }
   }
 
   public saveDecom(data: Demobilization[]) { this.setStorage('decom', data); }
-  public saveDemobilization(decom: Demobilization) {
+  public async saveDemobilization(decom: Demobilization) {
     const list = this.getDecom();
     const idx = list.findIndex((d) => d.id === decom.id);
     if (idx >= 0) list[idx] = decom;
@@ -597,11 +703,26 @@ class LocalDbEngine {
       if (vIdx >= 0) {
         vehicles[vIdx].status = 'Desmobilizado';
         this.saveVehicles(vehicles);
+        if (supabase) {
+          try {
+            await supabase.from('vehicles').upsert(vehicles[vIdx]);
+          } catch (err) {
+            console.error('Error updating vehicle status in Supabase:', err);
+          }
+        }
+      }
+    }
+
+    if (supabase) {
+      try {
+        await supabase.from('demobilizations').upsert(decom);
+      } catch (err) {
+        console.error('Error saving demobilization to Supabase:', err);
       }
     }
   }
 
-  public addAuditLog(log: Omit<AuditLog, 'id' | 'timestamp'>) {
+  public async addAuditLog(log: Omit<AuditLog, 'id' | 'timestamp'>) {
     const logs = this.getLogs();
     const newLog: AuditLog = {
       ...log,
@@ -609,6 +730,14 @@ class LocalDbEngine {
       timestamp: new Date().toISOString()
     };
     this.setStorage('logs', [newLog, ...logs]);
+
+    if (supabase) {
+      try {
+        await supabase.from('audit_logs').insert(newLog);
+      } catch (err) {
+        console.error('Error adding audit log to Supabase:', err);
+      }
+    }
   }
 
   public logAudit(user: UserProfile, modulo: string, acao: string, detalhes: string) {
@@ -619,6 +748,51 @@ class LocalDbEngine {
       acao,
       detalhes
     });
+  }
+
+  public async syncFromSupabase() {
+    if (!supabase) return false;
+    try {
+      const [
+        { data: companies },
+        { data: carriers },
+        { data: drivers },
+        { data: vehicles },
+        { data: contracts },
+        { data: fines },
+        { data: mileage },
+        { data: tags },
+        { data: decom },
+        { data: logs }
+      ] = await Promise.all([
+        supabase.from('companies').select('*'),
+        supabase.from('carriers').select('*'),
+        supabase.from('drivers').select('*'),
+        supabase.from('vehicles').select('*'),
+        supabase.from('contracts').select('*'),
+        supabase.from('fines').select('*'),
+        supabase.from('mileage_readings').select('*'),
+        supabase.from('tags').select('*'),
+        supabase.from('demobilizations').select('*'),
+        supabase.from('audit_logs').select('*').order('timestamp', { ascending: false })
+      ]);
+
+      if (companies && companies.length) this.saveCompanies(companies);
+      if (carriers && carriers.length) this.saveCarriers(carriers);
+      if (drivers && drivers.length) this.saveDrivers(drivers);
+      if (vehicles && vehicles.length) this.saveVehicles(vehicles);
+      if (contracts && contracts.length) this.saveContracts(contracts);
+      if (fines && fines.length) this.saveFines(fines);
+      if (mileage && mileage.length) this.saveMileage(mileage);
+      if (tags && tags.length) this.saveTags(tags);
+      if (decom && decom.length) this.saveDecom(decom);
+      if (logs && logs.length) this.setStorage('logs', logs);
+
+      return true;
+    } catch (err) {
+      console.error('Error syncing from Supabase:', err);
+      return false;
+    }
   }
 
   public resetToSeed() {

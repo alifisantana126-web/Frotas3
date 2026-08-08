@@ -142,14 +142,14 @@ export const Sidebar: React.FC<SidebarProps> = (props) => {
         <div className="p-6 border-b border-[#1C1C1C] flex items-center justify-between shrink-0">
           <div className="flex items-center gap-3.5">
             <div className="w-10 h-10 border border-[#BFA170] bg-[#080808] flex items-center justify-center text-[#BFA170] font-serif text-xl font-bold shadow-[0_0_15px_rgba(191,161,112,0.15)]">
-              L
+              F
             </div>
             <div>
               <h1 className="font-serif font-bold text-[#F5F5F5] text-sm tracking-[0.15em] uppercase leading-none">
-                L'ELITE FLEET
+                FROTAS
               </h1>
               <p className="text-[10px] text-[#BFA170] uppercase tracking-[0.2em] font-semibold mt-1">
-                Corporate Management
+                Gestão Corporativa
               </p>
             </div>
           </div>
@@ -198,74 +198,25 @@ export const Sidebar: React.FC<SidebarProps> = (props) => {
           })}
         </div>
 
-        {/* Footer Area: User Role Selector & Theme Toggle */}
-        <div className="p-5 border-t border-[#1C1C1C] bg-[#080808] space-y-4 shrink-0">
-          {/* Active User Card & Role Switcher */}
-          <div className="relative">
-            <button
-              onClick={() => setShowRoleSelector(!showRoleSelector)}
-              className="w-full flex items-center justify-between p-3 bg-[#0C0C0C] hover:bg-[#121212] border border-[#1C1C1C] transition-colors text-left"
-            >
-              <div className="flex items-center gap-3 min-w-0">
-                <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-[#BFA170] to-[#554A35] text-[#080808] font-bold text-xs flex items-center justify-center shrink-0">
-                  {currentUser.nome.charAt(0)}
-                </div>
-                <div className="min-w-0 flex-1">
-                  <p className="text-xs font-semibold text-[#F5F5F5] truncate">{currentUser.nome}</p>
-                  <p className="text-[10px] text-[#BFA170] uppercase tracking-widest font-semibold mt-0.5">
-                    {currentUser.role}
-                  </p>
-                </div>
-              </div>
-              <ChevronDown className="w-4 h-4 text-[#888888] shrink-0" />
-            </button>
-
-            {/* Role Dropdown */}
-            {showRoleSelector && (
-              <div className="absolute bottom-full left-0 right-0 mb-2 p-3 bg-[#0C0C0C] border border-[#1C1C1C] shadow-2xl z-50">
-                <p className="text-[10px] font-bold text-[#888888] uppercase tracking-[0.2em] mb-2">
-                  Alternar Perfil
-                </p>
-                <div className="space-y-1">
-                  {rolesList.map((r) => (
-                    <button
-                      key={r}
-                      onClick={() => {
-                        if (props.setCurrentUserRole) props.setCurrentUserRole(r);
-                        setShowRoleSelector(false);
-                      }}
-                      className={`w-full flex items-center justify-between px-3 py-2 text-xs uppercase tracking-wider transition-colors ${
-                        currentUser.role === r
-                          ? 'bg-[#161616] text-[#BFA170] font-bold border-l-2 border-[#BFA170]'
-                          : 'text-[#888888] hover:text-[#F5F5F5] hover:bg-[#121212]'
-                      }`}
-                    >
-                      <span>{r}</span>
-                      {currentUser.role === r && <ShieldCheck className="w-3.5 h-3.5 text-[#BFA170]" />}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
-
+        {/* Footer Area: Theme Toggle */}
+        <div className="p-5 border-t border-[#1C1C1C] bg-[#080808] shrink-0">
           {/* Theme Switcher Button */}
-          <div className="flex items-center justify-between pt-1 text-[10px] uppercase tracking-widest text-[#888888]">
-            <span>Modo Visual</span>
+          <div className="flex items-center justify-between text-[11px] font-medium text-[#888888]">
+            <span className="uppercase tracking-widest text-[10px]">Tema Visual</span>
             <button
               onClick={onToggleTheme}
-              className="p-2 flex items-center gap-1.5 bg-[#0C0C0C] hover:bg-[#121212] text-[#BFA170] border border-[#1C1C1C] transition-colors"
-              title="Alternar tema"
+              className="px-3 py-1.5 flex items-center gap-2 bg-[#0C0C0C] hover:bg-[#121212] text-[#F5F5F5] border border-[#1C1C1C] transition-all rounded shadow-sm"
+              title={theme === 'light' ? 'Ativar modo escuro' : 'Ativar modo claro'}
             >
-              {theme === 'dark' ? (
+              {theme === 'light' ? (
                 <>
-                  <Moon className="w-3.5 h-3.5 text-[#BFA170]" />
-                  <span className="text-[9px]">SOPHISTICATED DARK</span>
+                  <Moon className="w-3.5 h-3.5 text-slate-700" />
+                  <span className="text-[10px] font-semibold text-slate-700 uppercase tracking-wider">Ativar modo escuro</span>
                 </>
               ) : (
                 <>
                   <Sun className="w-3.5 h-3.5 text-amber-400" />
-                  <span className="text-[9px]">LUXURY LIGHT</span>
+                  <span className="text-[10px] font-semibold text-amber-400 uppercase tracking-wider">Ativar modo claro</span>
                 </>
               )}
             </button>

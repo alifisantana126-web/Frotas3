@@ -35,7 +35,10 @@ import { Menu, Shield, Moon, Sun, Building2, Bell, AlertTriangle } from 'lucide-
 export default function App() {
   // Navigation & User State
   const [currentView, setCurrentView] = useState<string>('dashboard');
-  const [theme, setTheme] = useState<'light' | 'dark'>('dark');
+  const [theme, setTheme] = useState<'light' | 'dark'>(() => {
+    const saved = localStorage.getItem('frotas_theme');
+    return (saved === 'dark' || saved === 'light') ? saved : 'light';
+  });
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
 
   // Users for Role Switch Simulation
@@ -101,7 +104,8 @@ export default function App() {
 
   // Initial Load & Dark Mode synchronization
   useEffect(() => {
-    // Sync theme
+    // Sync theme with localStorage and document root
+    localStorage.setItem('frotas_theme', theme);
     if (theme === 'dark') {
       document.documentElement.classList.add('dark');
     } else {
@@ -409,7 +413,7 @@ export default function App() {
             </div>
 
             {/* Right Side Header Controls */}
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-3">
               {/* Status Indicator */}
               <div className="hidden md:flex items-center gap-3 text-[10px] uppercase tracking-widest text-[#888888]">
                 <div className="flex items-center gap-1.5" title={isSupabaseConfigured ? 'Supabase configurado e sincronizado' : 'Modo local ativado. Configure VITE_SUPABASE_URL no .env'}>
@@ -417,6 +421,19 @@ export default function App() {
                   <span>Supabase: {isSupabaseConfigured ? 'Conectado' : 'Modo Local'}</span>
                 </div>
               </div>
+
+              {/* Theme Toggle Button in Header */}
+              <button
+                onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
+                className="p-2 text-[#888888] hover:text-[#BFA170] hover:bg-[#121212] transition-colors border border-transparent hover:border-[#1C1C1C] rounded"
+                title={theme === 'light' ? 'Ativar modo escuro' : 'Ativar modo claro'}
+              >
+                {theme === 'light' ? (
+                  <Moon className="w-4 h-4 text-slate-700" />
+                ) : (
+                  <Sun className="w-4 h-4 text-amber-400" />
+                )}
+              </button>
 
               {/* Alert Badge Indicator */}
               <button
@@ -429,35 +446,6 @@ export default function App() {
                   <span className="absolute top-1 right-1 w-2 h-2 bg-[#BFA170] rounded-full ring-2 ring-[#0C0C0C] animate-pulse" />
                 )}
               </button>
-
-              {/* Role Simulation Selector */}
-              <div className="flex items-center gap-3 pl-3 border-l border-[#1C1C1C]">
-                <Shield className="w-4 h-4 text-[#BFA170] hidden md:block" />
-                <div className="text-left hidden md:block">
-                  <p className="text-xs font-semibold text-[#F5F5F5] leading-tight">
-                    {currentUser.nome}
-                  </p>
-                  <p className="text-[10px] uppercase tracking-wider text-[#BFA170] leading-tight">{currentUser.role}</p>
-                </div>
-
-                <select
-                  value={currentUser.id}
-                  onChange={(e) => {
-                    const u = usersList.find((usr) => usr.id === e.target.value);
-                    if (u) {
-                      setCurrentUser(u);
-                      showToast('info', 'Perfil Alterado', `Alternado para visão de ${u.nome} (${u.role}).`);
-                    }
-                  }}
-                  className="px-2.5 py-1 text-xs bg-[#080808] border border-[#1C1C1C] text-[#F5F5F5] font-medium focus:outline-none focus:border-[#BFA170]"
-                >
-                  {usersList.map((u) => (
-                    <option key={u.id} value={u.id}>
-                      {u.nome} ({u.role})
-                    </option>
-                  ))}
-                </select>
-              </div>
             </div>
           </header>
 

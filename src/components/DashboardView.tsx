@@ -195,10 +195,10 @@ export const DashboardView: React.FC<DashboardViewProps> = (props) => {
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-6 border-b border-[#1C1C1C]">
         <div>
           <p className="text-[10px] uppercase tracking-[0.3em] text-[#BFA170] font-bold mb-1">
-            Overview & Telemetria Executive
+            Visão Geral & Telemetria Executiva
           </p>
           <h2 className="text-3xl sm:text-4xl font-serif font-bold tracking-tight text-[#F5F5F5]">
-            Consola da Frota L'Elite
+            Painel de Gestão de Frotas
           </h2>
           <p className="text-xs text-[#888888] mt-1.5 max-w-2xl">
             Painel unificado para monitoramento de conformidade de condutores (CNH), passivos de infrações, sinistros, locações e controle analítico de quilometragem.
